@@ -909,6 +909,7 @@ extern bool fulltest(const unsigned char *hash, const unsigned char *target);
 extern int opt_queue;
 extern int opt_scantime;
 extern int opt_expiry;
+extern int opt_asicdelay;
 
 #ifdef USE_USBUTILS
 extern pthread_mutex_t cgusb_lock;

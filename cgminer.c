@@ -91,6 +91,7 @@ const int opt_cutofftemp = 95;
 int opt_log_interval = 5;
 int opt_queue = 1;
 int opt_scantime = -1;
+int opt_asicdelay = 100;
 int opt_expiry = 120;
 static const bool opt_time = true;
 unsigned long long global_hashrate;
@@ -1153,6 +1154,9 @@ static struct opt_table opt_config_table[] = {
 		     add_serial, NULL, NULL,
 		     "Serial port to probe for Serial FPGA Mining device"),
 #endif
+	OPT_WITH_ARG("--asic-delay|-a",
+		     set_int_0_to_9999, opt_show_intval, &opt_asicdelay,
+		     "Upper bound on time spent asic delay current work, in ms"),
 	OPT_WITH_ARG("--scan-time|-s",
 		     set_int_0_to_9999, opt_show_intval, &opt_scantime,
 		     "Upper bound on time spent scanning current work, in seconds"),
@@ -4494,9 +4498,9 @@ static void set_options(void)
 	immedok(logwin, true);
 	clear_logwin();
 retry:
-	wlogprint("[Q]ueue: %d\n[S]cantime: %d\n[E]xpiry: %d\n"
+	wlogprint("[Q]ueue: %d\n[S]cantime: %d\n[E]xpiry: %d\n[A]SIC delay: %d\n"
 		  "[W]rite config file\n[C]gminer restart\n",
-		opt_queue, opt_scantime, opt_expiry);
+		opt_queue, opt_scantime, opt_expiry,opt_asicdelay);
 	wlogprint("Select an option or any other key to return\n");
 	logwin_update();
 	input = getch();
@@ -4524,6 +4528,14 @@ retry:
 			goto retry;
 		}
 		opt_expiry = selected;
+		goto retry;
+	} else if  (!strncasecmp(&input, "a", 1)) {
+		selected = curses_int("Set asic delay in ms");
+		if (selected < 0 || selected > 9999) {
+			wlogprint("Invalid selection\n");
+			goto retry;
+		}
+		opt_asicdelay = selected;
 		goto retry;
 	} else if  (!strncasecmp(&input, "w", 1)) {
 		FILE *fcfg;

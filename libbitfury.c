@@ -38,8 +38,7 @@
 
 #include <time.h>
 
-#define BITFURY_REFRESH_DELAY 100
-#define BITFURY_DETECT_TRIES 3000 / BITFURY_REFRESH_DELAY
+#define BITFURY_DETECT_TRIES 3000 / opt_asicdelay
 
 // 0 .... 31 bit
 // 1000 0011 0101 0110 1001 1010 1100 0111
@@ -184,7 +183,7 @@ int detect_chip(int chip_n) {
 		}
 		if (i && newbuf[16] != oldbuf[16])
 			return 1;
-		nmsleep(BITFURY_REFRESH_DELAY);
+		nmsleep(opt_asicdelay);
 		memcpy(oldbuf, newbuf, 17 * 4);
 	}
 	return 0;
@@ -328,8 +327,8 @@ int libbitfury_sendHashData(struct bitfury_device *bf, int chip_n) {
 			memcpy(oldbuf, newbuf, 17 * 4);
 		}
 
-		nmsleep(BITFURY_REFRESH_DELAY);
 	}
+	nmsleep(opt_asicdelay);
 	second_run = 1;
 
 	return;
